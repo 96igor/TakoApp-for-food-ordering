@@ -1,6 +1,7 @@
 package com.example.springinaction.takoapp.data;
 
 import com.example.springinaction.takoapp.Ingredient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +15,7 @@ public class JdbcIngredientRepository implements IngredientRepository{
 
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
     public JdbcIngredientRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -37,7 +39,13 @@ public class JdbcIngredientRepository implements IngredientRepository{
 
     @Override
     public Ingredient save(Ingredient ingredient) {
-        return null;
+        String sql="INSERT INTO Ingredient (id, name, type) VALUES (?, ?, ?)";
+        jdbcTemplate.update(
+                sql,
+                ingredient.getId(),
+                ingredient.getName(),
+                ingredient.getType());
+        return ingredient;
     }
 
     private Ingredient mapRowToIngredient(ResultSet row, int numRow)
