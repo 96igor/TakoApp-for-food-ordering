@@ -1,15 +1,18 @@
 package com.example.springinaction.takoapp.data;
 
+import com.example.springinaction.takoapp.Taco;
 import com.example.springinaction.takoapp.TacoOrder;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public class JdbcOrderRepository implements OrderRepository{
@@ -49,5 +52,21 @@ public class JdbcOrderRepository implements OrderRepository{
                         order.getCcExpiration(),
                         order.getCcCvv(),
                         order.getPlacedAt()));
+
+        GeneratedKeyHolder keyHolder=new GeneratedKeyHolder();
+        jdbcOperations.update(psc, keyHolder);
+        long orderId=keyHolder.getKey().byteValue();
+        order.setId(orderId);
+
+        List<Taco> tacos=order.getTacos();
+        int i=0;
+        for (Taco taco:tacos){
+            saveTaco(orderId, i++, taco);
+        }
+        return order;
+    }
+
+    private long saveTaco(Long orderId, int orderKey, Taco taco) {
+
     }
 }
