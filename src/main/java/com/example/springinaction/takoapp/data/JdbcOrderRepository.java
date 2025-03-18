@@ -1,5 +1,6 @@
 package com.example.springinaction.takoapp.data;
 
+import com.example.springinaction.takoapp.IngredientRef;
 import com.example.springinaction.takoapp.Taco;
 import com.example.springinaction.takoapp.TacoOrder;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -93,5 +94,16 @@ public class JdbcOrderRepository implements OrderRepository{
         saveIngredientRefs(tacoId, taco.getIngredients());
 
         return tacoId;
+    }
+
+    private void saveIngredientRefs(
+            long tacoId, List<IngredientRef> ingredientRefs) {
+        int key = 0;
+        for (IngredientRef ingredientRef : ingredientRefs) {
+            jdbcOperations.update(
+                    "insert into Ingredient_Ref (ingredient, taco, taco_key) "
+                            + "values (?, ?, ?)",
+                    ingredientRef.getIngredient(), tacoId, key++);
+        }
     }
 }
